@@ -1,0 +1,74 @@
+<html>
+<head>
+	<title>Login Form</title>
+<script src="jquery-3.1.0.js"></script>
+</head>
+<body>
+				Login:<input type="text" id="login" value="danilo" placeholder="user login" class="form-control"/><BR/>
+				Password:<input type="password" id="pwd" value="123" placeholder="password" class="form-control"/><BR/>
+				<input type="button" id="btLogin" value="Login" onclick="dologin();" class="btn btn-primary" /><BR/>
+				<input type="button" id="btLogout" value="Logout" onclick="dologout();" class="btn btn-primary" /><BR/>
+		Token:<input type="text" id="tokenTxt" value="" /><BR/>
+		<BR/>
+		<label id="lblMessages"></label>
+</body>
+<script>
+	function dologout(){
+		document.cookie="tokanVal='';";
+		window.location.reload(true);
+	}
+function dologin(){
+	var login = $("#login").val();
+	var pwd = $("#pwd").val();
+	var params = {'login': login, 'pwd': pwd};
+	$.post('router.php?action=login', params, function(data){
+		console.log(data);
+		var data = JSON.parse(data); 
+		if(data['status']=='error'){
+			$("#lblMessages").text("wrong user or password");
+		} else {
+			document.cookie="tokanVal="+ data['jwt']; /// you can set returned token in cookie or session and can send with each request to authenticate user
+			window.location.reload(true);
+		}
+	})
+	.fail(function(response) {
+  		console.log('Error: ' + response.responseText);
+	});
+}
+$(window).ready(function() {
+	var token = getCookie("tokanVal");
+	$("#tokenTxt").val(token);
+	if(token!="''"){
+			$("#login").hide();
+			$("#pwd").hide();
+			$("#btLogin").hide();
+			$("#btLogout").show();
+			$("#lblMessages").text("yes you are logged");
+	} else {
+		$("#login").show();
+			$("#pwd").show();
+		$("#btLogin").show();
+		$("#btLogout").hide();
+		$("#lblMessages").text("now you are guest");
+	}
+});
+
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+</script>
+
+</html>

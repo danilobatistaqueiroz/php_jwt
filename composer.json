@@ -3,5 +3,13 @@
         "firebase/php-jwt": "dev-master",
         "zendframework/zend-config": "~2.3",
         "zendframework/zend-http": "~2.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Labs\\": [
+                "src/Labs",
+                "tests/Labs"
+            ]
+        }
     }
 }
